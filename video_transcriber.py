@@ -3,6 +3,7 @@
 import assemblyai as aai
 import os
 import cv2
+import sys
 from moviepy import ImageSequenceClip, AudioFileClip, VideoFileClip
 from tqdm import tqdm
 from config import assemblyai_api_key
@@ -10,12 +11,13 @@ from config import assemblyai_api_key
 aai.settings.api_key = assemblyai_api_key # linked to my assemblyai account - google: brendanrboone@gmail.com
 
 class VideoTranscriber:
-    def __init__(self, video_path):
+    def __init__(self, video_path, maxcap):
         self.video_path = video_path
         self.transcriber = aai.Transcriber()
         self.audio_path = ''
         self.text_array = []
         self.fps = 0
+        self.maxcap = maxcap
         self.char_width = 0
 
     def transcribe_video(self):
@@ -41,6 +43,7 @@ class VideoTranscriber:
         current_utterance = [] # [current_line, start, end]
         current_width = 0
         current_line = ""
+        current_wc = 0         # word count
         start = 0
         end = 0
         for i, word in enumerate(words):
@@ -48,15 +51,18 @@ class VideoTranscriber:
             if start == 0: start = word.start / 1000 * self.fps
             end = word.end / 1000 * self.fps
             wordWidth, _ = cv2.getTextSize(word.text, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)[0]
-            if current_width + wordWidth < videoWidthLimit:
+            current_wc += 1
+            if current_width + wordWidth < videoWidthLimit and current_wc <= self.maxcap:
                 current_line += word.text + " "
                 current_width += wordWidth + 1
             else:
                 if current_width != 0: current_line = current_line[:-1] # removes the last space
+                else: print("ERROR: text too big", file=sys.stderr)
                 time_of_next_word = word.start / 1000 * self.fps # subtitle start priority in timing
                 current_utterance = [current_line, start, time_of_next_word]
                 print("current utterance:", current_utterance)
                 self.text_array.append(current_utterance)
+                current_wc = 1
                 start = word.start / 1000 * self.fps
                 current_line = word.text + " "
                 current_width = wordWidth + 1

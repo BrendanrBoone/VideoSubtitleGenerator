@@ -8,61 +8,47 @@ import wave
 import tempfile
 import os
 import sys
-import cv2
-from moviepy import ImageSequenceClip, AudioFileClip, VideoFileClip
-from tqdm import tqdm
 from config import assemblyai_api_key
+from video_transcriber import VideoTranscriber
 
-# Audio settings
-SAMPLE_RATE = 16000  # Whisper's required sample rate
-CHUNK_DURATION = 5   # Process every 5 seconds of audio
-
-# assemblyai settings
-aai.settings.api_key = assemblyai_api_key # linked to my assemblyai account - google: brendanrboone@gmail.com
+aai.settings.api_key = assemblyai_api_key
 transcriber = aai.Transcriber()
 
-# Import VideoTranscriber class
-from VideoTranscriber import VideoTranscriber
+SAMPLE_RATE = 16000
+CHUNK_DURATION = 5
 
 def saveAudioChunk(audio_data, sample_rate):
-    # Create a temporary WAV file
     with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as temp_file:
         with wave.open(temp_file.name, 'wb') as wav_file:
-            wav_file.setnchannels(1)  # Mono
-            wav_file.setsampwidth(2)  # 2 bytes per sample
+            wav_file.setnchannels(1)
+            wav_file.setsampwidth(2)
             wav_file.setframerate(sample_rate)
-            # Convert float32 to int16
             audio_int16 = (audio_data * 32767).astype(np.int16)
             wav_file.writeframes(audio_int16.tobytes())
         return temp_file.name
 
-# records audio
 def recordAudio():
     print("Listening... (Press Ctrl+C to stop)")
     with sd.InputStream(samplerate=SAMPLE_RATE, channels=1, dtype='float32') as stream:
         while True:
             audio_chunk, _ = stream.read(int(SAMPLE_RATE * CHUNK_DURATION))
             audio_np = np.squeeze(audio_chunk)
-            
-            # Save the audio chunk as a temporary WAV file
             temp_file = saveAudioChunk(audio_np, SAMPLE_RATE)
-            
             try:
-                # Transcribe the audio file
                 transcript = transcriber.transcribe(temp_file)
                 print("Transcription:", transcript.text)
             except Exception as e:
                 print(f"Error: {e}", file=sys.stderr)
             finally:
-                # Clean up the temporary file
                 os.unlink(temp_file)
 
 # reads inputted file. The file can be any common sound or video file (e.g. mp3, mp4, etc)
 # @param file: str
-def transcriptFile(file):
+# @param maxcap: int
+def transcriptFile(file, maxcap):
     try:
         if file.lower().endswith(('.mp4', '.avi', '.mov', '.mkv')):  # Video files
-            transcriber = VideoTranscriber(file)
+            transcriber = VideoTranscriber(file, maxcap)
             transcriber.extract_audio()
             transcriber.transcribe_video()
             # Generate output path in same directory as input
@@ -79,16 +65,17 @@ def transcriptFile(file):
 
 # depending if file was inputed, records audio or reads inputted file
 # @param file: str
-def transcriptAudio(file):
+# @param maxcap: int
+def transcriptAudio(file, maxcap=4):
     if file:
-        transcriptFile(file)
+        transcriptFile(file, maxcap)
     else:
         recordAudio()
 
 # reads flags and arguments on command line. setsup argparse
 def getArguments():
     parser = argparse.ArgumentParser(
-        prog="subtitleGenerator.py",
+        prog="main.py",
         description="generates subtitles for given mp4 file.\nIf file name is not specified, records audio live",
         epilog="9 + 10 != 21"
     )
@@ -99,4 +86,5 @@ def getArguments():
 if __name__ == "__main__":
     args = getArguments()
     file = args.file
-    transcriptAudio(file)
+    maxcap = args.maxcap
+    transcriptAudio(file, maxcap)
