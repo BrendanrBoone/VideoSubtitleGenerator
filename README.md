@@ -5,7 +5,7 @@ Generates subtitles for given mp4 file. If file name is not specified, records a
 
 ## Usage
 
-```python main.py [-h] [-f FILE] [-m MAXCAP]
+```python main.py [-h] [-f FILE] [-m MAXCAP]```
 
 ### Things to do
 * adjustable number of maximum words on screen. *while also looking at screen size
