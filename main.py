@@ -10,6 +10,8 @@ import os
 import sys
 from config import assemblyai_api_key
 from video_transcriber import VideoTranscriber
+from font import Fonts
+from colors import Colors
 
 aai.settings.api_key = assemblyai_api_key
 transcriber = aai.Transcriber()
@@ -45,10 +47,10 @@ def recordAudio():
 # reads inputted file. The file can be any common sound or video file (e.g. mp3, mp4, etc)
 # @param file: str
 # @param maxcap: int
-def transcriptFile(file, maxcap):
+def transcriptFile(file, maxcap, font, font_size, color, yaxis):
     try:
         if file.lower().endswith(('.mp4', '.avi', '.mov', '.mkv')):  # Video files
-            transcriber = VideoTranscriber(file, maxcap)
+            transcriber = VideoTranscriber(file, maxcap, font, font_size, color, yaxis)
             transcriber.extract_audio()
             transcriber.transcribe_video()
             # Generate output path in same directory as input
@@ -66,9 +68,11 @@ def transcriptFile(file, maxcap):
 # depending if file was inputed, records audio or reads inputted file
 # @param file: str
 # @param maxcap: int
-def transcriptAudio(file, maxcap=4):
+def transcriptAudio(file, maxcap=4, font='FONT_HERSHEY_SIMPLEX', font_size=0.8, color='green', yaxis=50):
     if file:
-        transcriptFile(file, maxcap)
+        font = Fonts[font]
+        color = Colors[color]
+        transcriptFile(file, maxcap, font, font_size, color, yaxis)
     else:
         recordAudio()
 
@@ -79,12 +83,21 @@ def getArguments():
         description="generates subtitles for given mp4 file.\nIf file name is not specified, records audio live",
         epilog="9 + 10 != 21"
     )
-    parser.add_argument('-f', '--file', type=str, help="Filename for generating subtitles (optional)")
-    parser.add_argument('-m', '--maxcap', type=int, help="Maximum Characters per caption (default=4)")
+    parser.add_argument('-f', '--file', type=str, help="Filename for generating subtitles")
+    parser.add_argument('-m', '--maxcap', type=int, help="Maximum words per caption (default=4)")
+    parser.add_argument('-F', '--font', type=str, help="Selectable font type (default='FONT_HERSHEY_SIMPLEX')")
+    parser.add_argument('-S', '--font_size', type=float, help="Selectable font size (default=0.8) *font scale factor from their base size")
+    parser.add_argument('-c', '--color', type=str, help="Text color bgr (default='green')")
+    parser.add_argument('-y', '--yAxis', type=int, help="Where on the yaxis of the screen from top to bottom as a percentage (default=50)")
     return parser.parse_args()
 
 if __name__ == "__main__":
     args = getArguments()
     file = args.file
     maxcap = args.maxcap
-    transcriptAudio(file, maxcap)
+    font = args.font
+    font_size = args.font_size
+    color = args.color
+    yaxis = args.yAxis
+
+    transcriptAudio(file, maxcap, font, font_size, color, yaxis)

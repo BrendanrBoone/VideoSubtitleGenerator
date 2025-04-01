@@ -11,7 +11,7 @@ from config import assemblyai_api_key
 aai.settings.api_key = assemblyai_api_key # linked to my assemblyai account - google: brendanrboone@gmail.com
 
 class VideoTranscriber:
-    def __init__(self, video_path, maxcap):
+    def __init__(self, video_path, maxcap, font, font_size, color, yaxis):
         self.video_path = video_path
         self.transcriber = aai.Transcriber()
         self.audio_path = ''
@@ -19,6 +19,10 @@ class VideoTranscriber:
         self.fps = 0
         self.maxcap = maxcap
         self.char_width = 0
+        self.font = font
+        self.font_size = font_size
+        self.color = color
+        self.yaxis = yaxis
 
     def transcribe_video(self):
         print('Transcribing video')
@@ -26,7 +30,7 @@ class VideoTranscriber:
         
         # Get the first word's text as initial text for size calculation
         text = transcript.words[0].text if transcript.words else ""
-        textWidth, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)[0]
+        textWidth, _ = cv2.getTextSize(text, self.font, self.font_size, 2)[0]
         cap = cv2.VideoCapture(self.video_path)
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -46,11 +50,12 @@ class VideoTranscriber:
         current_wc = 0         # word count
         start = 0
         end = 0
+        ending_delay = 10      # add an arbitrary delay at the end *in frames
         for i, word in enumerate(words):
             print(i, word, "!")
             if start == 0: start = word.start / 1000 * self.fps
             end = word.end / 1000 * self.fps
-            wordWidth, _ = cv2.getTextSize(word.text, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)[0]
+            wordWidth, _ = cv2.getTextSize(word.text, self.font, self.font_size, 2)[0]
             current_wc += 1
             if current_width + wordWidth < videoWidthLimit and current_wc <= self.maxcap:
                 current_line += word.text + " "
@@ -58,7 +63,7 @@ class VideoTranscriber:
             else:
                 if current_width != 0: current_line = current_line[:-1] # removes the last space
                 else: print("ERROR: text too big", file=sys.stderr)
-                time_of_next_word = word.start / 1000 * self.fps # subtitle start priority in timing
+                time_of_next_word = word.start / 1000 * self.fps # subtitle prioritizes start timing
                 current_utterance = [current_line, start, time_of_next_word]
                 print("current utterance:", current_utterance)
                 self.text_array.append(current_utterance)
@@ -66,7 +71,7 @@ class VideoTranscriber:
                 start = word.start / 1000 * self.fps
                 current_line = word.text + " "
                 current_width = wordWidth + 1
-        current_utterance = [current_line, start, end]
+        current_utterance = [current_line, start, end + ending_delay]
         self.text_array.append(current_utterance)
 
         cap.release()
@@ -99,10 +104,10 @@ class VideoTranscriber:
             for utterance in self.text_array:
                 if N_frames >= utterance[1] and N_frames <= utterance[2]:
                     text = utterance[0]
-                    text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)
+                    text_size, _ = cv2.getTextSize(text, self.font, self.font_size, 2)
                     text_x = int((frame.shape[1] - text_size[0]) / 2)
                     text_y = int(height/2)
-                    cv2.putText(frame, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+                    cv2.putText(frame, text, (text_x, text_y), self.font, self.font_size - 0.05, self.color, 2)
                     break
         
             cv2.imwrite(os.path.join(output_folder, str(N_frames) + ".jpg"), frame)
