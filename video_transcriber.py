@@ -22,7 +22,7 @@ class VideoTranscriber:
         self.font = font
         self.font_size = font_size
         self.color = color
-        self.yaxis = yaxis
+        self.yaxis = yaxis #% 100 # percentage wraps around if exceeds 100
 
     def transcribe_video(self):
         print('Transcribing video')
@@ -106,7 +106,7 @@ class VideoTranscriber:
                     text = utterance[0]
                     text_size, _ = cv2.getTextSize(text, self.font, self.font_size, 2)
                     text_x = int((frame.shape[1] - text_size[0]) / 2)
-                    text_y = int(height/2)
+                    text_y = int(height * (self.yaxis/100))
                     cv2.putText(frame, text, (text_x, text_y), self.font, self.font_size - 0.05, self.color, 2)
                     break
         
