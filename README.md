@@ -4,7 +4,7 @@ Generates subtitles for given mp4 file. If file name is not specified, records a
 * Uses AssemblyAI to transcribe speech
 
 ## Requirment
-* make an api key with (assemblyai)[https://www.assemblyai.com/dashboard/api-keys?project=526016]
+* make an api key with [assemblyai](https://www.assemblyai.com/dashboard/api-keys?project=526016)
 
 ## Usage
 
