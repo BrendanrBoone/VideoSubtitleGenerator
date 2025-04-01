@@ -1,0 +1,8 @@
+# Ignore file
+config.py
+
+# Ignore directories
+testMP4Files/
+testAudioFiles/
+outputFiles/
+__pycache__
