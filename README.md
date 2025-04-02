@@ -8,7 +8,7 @@ Generates subtitles for given mp4 file. If file name is not specified, records a
 
 ## Usage
 
-```python main.py [-h] [-f FILE] [-m MAXCAP] [-F FONT] [-S FONT_SIZE] [-c COLOR] [-y YAXIS]```
+```python main.py [-h] [-f FILE] [-m MAXCAP] [-F FONT] [-S FONT_SIZE] [-c COLOR] [-y YAXIS] [-r ROTATE]```
 
 ### font options:
 * 'simplex'
