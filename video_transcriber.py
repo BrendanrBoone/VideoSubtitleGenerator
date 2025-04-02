@@ -28,6 +28,8 @@ class VideoTranscriber:
         self.width = 0
         self.height = 0
         self.asp = 0
+        if not os.path.exists("outputFiles"):
+            os.makedirs("outputFiles")
 
     def get_video_rotation(self, video_path):
         with av.open(video_path) as container:
@@ -95,7 +97,7 @@ class VideoTranscriber:
         cap.release()
         print('Transcription complete')
 
-    def extract_audio(self, output_audio_path='testMP4Files/audio.mp3'):
+    def extract_audio(self, output_audio_path='outputFiles/audio.mp3'):
         print('Extracting Audio')
         video = VideoFileClip(self.video_path)
         audio = video.audio
@@ -110,10 +112,10 @@ class VideoTranscriber:
 
         while True:
             ret, frame = cap.read()
-            for _ in range(self.rotate):
-                frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
             if not ret:
                 break
+            for _ in range(self.rotate):
+                frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
 
             # SUBTITLING HERE -- utterance: [current_line, start, end]
             for utterance in self.text_array:
@@ -133,7 +135,7 @@ class VideoTranscriber:
 
     def create_video(self, output_video_path):
         print('Creating video')
-        image_folder = os.path.join(os.path.dirname(self.video_path), "frames")
+        image_folder = os.path.join("outputFiles/", "frames")
         if not os.path.exists(image_folder):
             os.makedirs(image_folder)
         else:
