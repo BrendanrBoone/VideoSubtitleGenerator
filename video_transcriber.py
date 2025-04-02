@@ -151,8 +151,8 @@ class VideoTranscriber:
         images = [img for img in os.listdir(image_folder) if img.endswith(".jpg")]
         images.sort(key=lambda x: int(x.split(".")[0]))
 
-        clip = ImageSequenceClip([os.path.join(image_folder, image) for image in tqdm(images)], fps=self.fps)
+        clip = ImageSequenceClip(sequence=[os.path.join(image_folder, image) for image in tqdm(images)], fps=self.fps)
         audio = AudioFileClip(self.audio_path)
         clip = clip.with_audio(audio)
-        clip.write_videofile(output_video_path)
+        clip.write_videofile(output_video_path, codec='libx264')
 
