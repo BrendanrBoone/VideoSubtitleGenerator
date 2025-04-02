@@ -47,10 +47,10 @@ def recordAudio():
 # reads inputted file. The file can be any common sound or video file (e.g. mp3, mp4, etc)
 # @param file: str
 # @param maxcap: int
-def transcriptFile(file, maxcap, font, font_size, color, yaxis):
+def transcriptFile(file, maxcap, font, font_size, color, yaxis, rotate):
     try:
         if file.lower().endswith(('.mp4', '.avi', '.mov', '.mkv')):  # Video files
-            transcriber = VideoTranscriber(file, maxcap, font, font_size, color, yaxis)
+            transcriber = VideoTranscriber(file, maxcap, font, font_size, color, yaxis, rotate)
             transcriber.extract_audio()
             transcriber.transcribe_video()
             # Generate output path in same directory as input
@@ -68,11 +68,11 @@ def transcriptFile(file, maxcap, font, font_size, color, yaxis):
 # depending if file was inputed, records audio or reads inputted file
 # @param file: str
 # @param maxcap: int
-def transcriptAudio(file, maxcap=4, font='FONT_HERSHEY_SIMPLEX', font_size=0.8, color='green', yaxis=50):
+def transcriptAudio(file, maxcap, font, font_size, color, yaxis, rotate):
     if file:
         font = Fonts[font]
         color = Colors[color]
-        transcriptFile(file, maxcap, font, font_size, color, yaxis)
+        transcriptFile(file, maxcap, font, font_size, color, yaxis, rotate)
     else:
         recordAudio()
 
@@ -89,15 +89,17 @@ def getArguments():
     parser.add_argument('-S', '--font_size', type=float, help="Selectable font size (default=0.8) *font scale factor from their base size")
     parser.add_argument('-c', '--color', type=str, help="Text color bgr (default='green')")
     parser.add_argument('-y', '--yAxis', type=int, help="Where on the yaxis of the screen from top to bottom as a percentage (default=50)")
+    parser.add_argument('-r', '--rotate', type=int, help="How many 90deg rotations counterclockwise. (e.g. 1 == 90, 3 == 270, default=0)")
     return parser.parse_args()
 
 if __name__ == "__main__":
     args = getArguments()
-    file = args.file
-    maxcap = args.maxcap
-    font = args.font
-    font_size = args.font_size
-    color = args.color
-    yaxis = args.yAxis
+    file = args.file if args.file else None
+    maxcap = args.maxcap if args.maxcap else 4
+    font = args.font if args.font else 'FONT_HERSHEY_SIMPLEX'
+    font_size = args.font_size if args.font_size else 0.8
+    color = args.color if args.color else 'green'
+    yaxis = args.yAxis if args.yAxis else 50
+    rotate = args.rotate if args.rotate else 0
 
-    transcriptAudio(file, maxcap, font, font_size, color, yaxis)
+    transcriptAudio(file, maxcap, font, font_size, color, yaxis, rotate)
