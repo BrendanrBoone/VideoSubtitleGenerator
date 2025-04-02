@@ -54,8 +54,6 @@ class VideoTranscriber:
         ret, frame = cap.read()
         for _ in range(self.rotate):
             frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
-
-        print("FRAME\n", frame.shape)
         
         videoWidthLimit = frame.shape[1] - (frame.shape[1] * 0.1)  # WIDTH LIMIT IN PIXELS
         self.fps = cap.get(cv2.CAP_PROP_FPS)
@@ -153,7 +151,7 @@ class VideoTranscriber:
         images = [img for img in os.listdir(image_folder) if img.endswith(".jpg")]
         images.sort(key=lambda x: int(x.split(".")[0]))
 
-        clip = ImageSequenceClip([os.path.join(image_folder, image) for image in images], fps=self.fps)
+        clip = ImageSequenceClip([os.path.join(image_folder, image) for image in tqdm(images)], fps=self.fps)
         audio = AudioFileClip(self.audio_path)
         clip = clip.with_audio(audio)
         clip.write_videofile(output_video_path)
