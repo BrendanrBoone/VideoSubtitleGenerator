@@ -96,7 +96,7 @@ if __name__ == "__main__":
     args = getArguments()
     file = args.file if args.file else None
     maxcap = args.maxcap if args.maxcap else 4
-    font = args.font if args.font else 'FONT_HERSHEY_SIMPLEX'
+    font = args.font if args.font else 'simplex'
     font_size = args.font_size if args.font_size else 0.8
     color = args.color if args.color else 'green'
     yaxis = args.yAxis if args.yAxis else 50

@@ -70,7 +70,7 @@ class VideoTranscriber:
         end = 0
         ending_delay = 10      # add an arbitrary delay at the end *in frames
         for i, word in enumerate(words):
-            print(i, word, "!")
+            #print(i, word, "!")
             if start == 0: start = word.start / 1000 * self.fps
             end = word.end / 1000 * self.fps
             wordWidth, _ = cv2.getTextSize(word.text, self.font, self.font_size, 2)[0]
@@ -83,7 +83,7 @@ class VideoTranscriber:
                 else: print("ERROR: text too big", file=sys.stderr)
                 time_of_next_word = word.start / 1000 * self.fps # subtitle prioritizes start timing
                 current_utterance = [current_line, start, time_of_next_word]
-                print("current utterance:", current_utterance)
+                #print("current utterance:", current_utterance)
                 self.text_array.append(current_utterance)
                 current_wc = 1
                 start = word.start / 1000 * self.fps
@@ -154,5 +154,5 @@ class VideoTranscriber:
         clip = ImageSequenceClip(sequence=[os.path.join(image_folder, image) for image in tqdm(images)], fps=self.fps)
         audio = AudioFileClip(self.audio_path)
         clip = clip.with_audio(audio)
-        clip.write_videofile(output_video_path, codec='libx264')
+        clip.write_videofile(output_video_path, codec='libx264', audio_codec='aac', fps=self.fps)
 
