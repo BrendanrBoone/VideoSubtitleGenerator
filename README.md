@@ -48,4 +48,3 @@ Generates subtitles for given mp4 file. If file name is not specified, records a
 * implement UI -- try PyQt/PySide
 * implement text editing feature - likely by producing trancript file additionally to the generated video
 * add like a shadow, and maybe cycling colors for text
-* drag the subtitle box
