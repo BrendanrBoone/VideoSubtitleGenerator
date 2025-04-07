@@ -4,7 +4,7 @@ import sys
 import os
 from PySide6.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout, 
                              QWidget, QLabel, QHBoxLayout, QScrollArea, QFileDialog,
-                             QInputDialog)
+                             QInputDialog, QComboBox)
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt, QTimer
 from util.draggable_text_edit import DraggableTextEdit
@@ -82,14 +82,14 @@ class MainWindow(QMainWindow):
             
             # Create thumbnail navigation layout
             self.nav_layout = QHBoxLayout()
-            self.nav_container = QWidget()  # Create a container widget
-            self.nav_container.setLayout(self.nav_layout)  # Set the layout on the container
+            self.nav_container = QWidget()
+            self.nav_container.setLayout(self.nav_layout)
             self.nav_layout.addWidget(self.prev_button)
             self.nav_layout.addWidget(self.scroll_area)
             self.nav_layout.addWidget(self.next_button)
             
             print("Setting up text box...")
-            # Create draggable text box
+ 
             text = "Drag me!"
             self.text_box = DraggableTextEdit(self.image_label)
             self.text_box.setFixedSize(150, 50)
@@ -107,6 +107,21 @@ class MainWindow(QMainWindow):
             self.maxcap.setLabelText("maximum words per caption:")
             self.maxcap.setIntValue(4)
 
+            # font type label
+            self.fontLabel = QLabel("font:")
+
+            # font type
+            self.fontInputField = QComboBox()
+            self.fontInputField.setEditable(True)
+            self.fontInputField.setPlaceholderText("Select font")
+
+            # font type container
+            self.font_container = QWidget()
+            self.font_layout = QVBoxLayout()
+            self.font_container.setLayout(self.font_layout)
+            self.font_layout.addWidget(self.fontLabel)
+            self.font_layout.addWidget(self.fontInputField)
+
             # font size
             self.font_size = QInputDialog()
             self.font_size.setOption(QInputDialog.InputDialogOption.NoButtons)
@@ -120,9 +135,10 @@ class MainWindow(QMainWindow):
             self.opt_container.setLayout(self.opt_layout)
             self.opt_layout.addWidget(self.maxcap)
             self.opt_layout.addWidget(self.font_size)
+            self.opt_layout.addWidget(self.font_container)
             
             print("Adding widgets to layout...")
-            # Add widgets to layout
+
             self.layout.addWidget(self.image_label)
             self.layout.addWidget(self.filename_label)
             self.layout.addWidget(self.nav_container)
