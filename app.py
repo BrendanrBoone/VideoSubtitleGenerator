@@ -10,6 +10,7 @@ from PySide6.QtCore import Qt, QTimer
 from gui.util.draggable_text_edit import DraggableTextEdit
 from gui.util.thumbnail_label import ThumbnailLabel
 from util.font import Fonts
+from util.colors import Colors
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -131,9 +132,24 @@ class MainWindow(QMainWindow):
             self.font_size.setLabelText("font size:")
             self.font_size.setDoubleValue(0.8)
 
+            # color label
+            self.colorLabel = QLabel("color:")
+
             # color
+            self.colorInputField = QComboBox()
+            self.colorInputField.setEditable(True)
+            self.colorInputField.setPlaceholderText("Select color")
+            self.colorInputField.addItems([s for s in Colors.keys()])
+
+            # color container
+            self.color_container = QWidget()
+            self.color_layout = QVBoxLayout()
+            self.color_container.setLayout(self.color_layout)
+            self.color_layout.addWidget(self.colorLabel)
+            self.color_layout.addWidget(self.colorInputField)
 
             # rotation
+            self.rotationButton = QPushButton("rotate")
 
             # layout main.py options and set defaults
             self.opt_layout = QHBoxLayout()
@@ -142,6 +158,8 @@ class MainWindow(QMainWindow):
             self.opt_layout.addWidget(self.maxcap)
             self.opt_layout.addWidget(self.font_size)
             self.opt_layout.addWidget(self.font_container)
+            self.opt_layout.addWidget(self.color_container)
+            self.opt_layout.addWidget(self.rotationButton)
             
             print("Adding widgets to layout...")
 
