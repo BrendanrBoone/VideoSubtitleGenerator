@@ -3,7 +3,8 @@
 import sys
 import os
 from PySide6.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout, 
-                             QWidget, QLabel, QHBoxLayout, QScrollArea, QFileDialog)
+                             QWidget, QLabel, QHBoxLayout, QScrollArea, QFileDialog,
+                             QInputDialog)
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt, QTimer
 from util.draggable_text_edit import DraggableTextEdit
@@ -46,6 +47,17 @@ class MainWindow(QMainWindow):
                     padding: 5px;
                 }
             """)
+
+            self.vidname_label = QLabel()
+            self.vidname_label.setAlignment(Qt.AlignCenter)
+            self.vidname_label.setStyleSheet("""
+                QLabel {
+                    font-size: 14px;
+                    color: #333;
+                    padding: 5px;
+                }
+            """)
+            self.vidname_label.setText("Current video: Not Selected")
             
             print("Setting up thumbnails...")
             # Create thumbnail strip
@@ -70,6 +82,8 @@ class MainWindow(QMainWindow):
             
             # Create thumbnail navigation layout
             self.nav_layout = QHBoxLayout()
+            self.nav_container = QWidget()  # Create a container widget
+            self.nav_container.setLayout(self.nav_layout)  # Set the layout on the container
             self.nav_layout.addWidget(self.prev_button)
             self.nav_layout.addWidget(self.scroll_area)
             self.nav_layout.addWidget(self.next_button)
@@ -86,14 +100,35 @@ class MainWindow(QMainWindow):
             self.fileSelectButton = QPushButton("Open File", self)
             self.fileSelectButton.clicked.connect(self.open_file_dialogue)
 
+            # maximum words per caption
+            self.maxcap = QInputDialog()
+            self.maxcap.setOption(QInputDialog.InputDialogOption.NoButtons)
+            self.maxcap.setInputMode(QInputDialog.InputMode.IntInput)
+            self.maxcap.setLabelText("maximum words per caption:")
+            self.maxcap.setIntValue(4)
+
+            # font size
+            self.font_size = QInputDialog()
+            self.font_size.setOption(QInputDialog.InputDialogOption.NoButtons)
+            self.font_size.setInputMode(QInputDialog.InputMode.DoubleInput)
+            self.font_size.setLabelText("font size:")
+            self.font_size.setDoubleValue(0.8)
+
             # layout main.py options and set defaults
+            self.opt_layout = QHBoxLayout()
+            self.opt_container = QWidget()
+            self.opt_container.setLayout(self.opt_layout)
+            self.opt_layout.addWidget(self.maxcap)
+            self.opt_layout.addWidget(self.font_size)
             
             print("Adding widgets to layout...")
             # Add widgets to layout
             self.layout.addWidget(self.image_label)
-            self.layout.addWidget(self.filename_label)  # Add filename label
-            self.layout.addLayout(self.nav_layout)
+            self.layout.addWidget(self.filename_label)
+            self.layout.addWidget(self.nav_container)
+            self.layout.addWidget(self.vidname_label)
             self.layout.addWidget(self.fileSelectButton)
+            self.layout.addWidget(self.opt_container)
             
             print("Loading frames...")
             # Load frames and show first frame
@@ -116,8 +151,6 @@ class MainWindow(QMainWindow):
             print(f"Selected file: {file_path}")
         else:
             print("No file selected")
-
-        
 
     def load_frames(self):
         cur_file_path = os.path.abspath(__file__)
@@ -157,7 +190,7 @@ class MainWindow(QMainWindow):
         if not frame_files:
             print(f"Error: No jpg files found in '{frames_dir}' directory.")
             self.filename_label.setText("Error: No jpg files found in frames directory")
-            # Create a default blank image if no frames are available
+            
             blank_pixmap = QPixmap(400, 300)
             blank_pixmap.fill(Qt.white)
             self.frames.append(blank_pixmap)
@@ -165,7 +198,6 @@ class MainWindow(QMainWindow):
             self.show_frame(0)
             return
             
-        # Sort by the numeric part of the filename
         frame_files.sort(key=lambda x: int(''.join(filter(str.isdigit, x))))
         
         # Use a set to track unique filenames
@@ -181,7 +213,6 @@ class MainWindow(QMainWindow):
                 if not pixmap.isNull():
                     self.frames.append(pixmap)
                     
-                    # Create thumbnail
                     thumbnail = ThumbnailLabel()
                     thumbnail_pixmap = pixmap.scaled(80, 60, Qt.KeepAspectRatio, Qt.SmoothTransformation)
                     thumbnail.setPixmap(thumbnail_pixmap)
@@ -191,13 +222,12 @@ class MainWindow(QMainWindow):
         if not self.frames:
             print("Error: Failed to load any valid frames.")
             self.filename_label.setText("Error: Failed to load any valid frames")
-            # Create a default blank image if no frames could be loaded
+            
             blank_pixmap = QPixmap(400, 300)
             blank_pixmap.fill(Qt.white)
             self.frames.append(blank_pixmap)
             self.frame_files.append("blank.jpg")
             
-            # Create thumbnail for blank image
             thumbnail = ThumbnailLabel()
             thumbnail_pixmap = blank_pixmap.scaled(80, 60, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             thumbnail.setPixmap(thumbnail_pixmap)
