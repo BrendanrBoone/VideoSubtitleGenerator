@@ -14,7 +14,7 @@ class MainWindow(QMainWindow):
         try:
             print("MainWindow init start...")
             super().__init__()
-            self.setWindowTitle("Button Test")
+            self.setWindowTitle("Initializing MainWindow")
             self.setGeometry(100, 100, 800, 600)
             self.setMinimumSize(300, 400)  # Set reasonable minimum window size
             
@@ -69,10 +69,10 @@ class MainWindow(QMainWindow):
             self.next_button.clicked.connect(self.show_next_frame)
             
             # Create thumbnail navigation layout
-            nav_layout = QHBoxLayout()
-            nav_layout.addWidget(self.prev_button)
-            nav_layout.addWidget(self.scroll_area)
-            nav_layout.addWidget(self.next_button)
+            self.nav_layout = QHBoxLayout()
+            self.nav_layout.addWidget(self.prev_button)
+            self.nav_layout.addWidget(self.scroll_area)
+            self.nav_layout.addWidget(self.next_button)
             
             print("Setting up text box...")
             # Create draggable text box
@@ -85,27 +85,15 @@ class MainWindow(QMainWindow):
             # File browser
             self.fileSelectButton = QPushButton("Open File", self)
             self.fileSelectButton.clicked.connect(self.open_file_dialogue)
-            
-            print("Setting up buttons...")
-            # Create buttons
-            self.button1 = QPushButton("Print Hello")
-            self.button2 = QPushButton("Print World")
-            self.button3 = QPushButton("Print Button Clicked")
-            
-            # Connect buttons to functions
-            self.button1.clicked.connect(self.print_hello)
-            self.button2.clicked.connect(self.print_world)
-            self.button3.clicked.connect(self.print_button_clicked)
+
+            # layout main.py options and set defaults
             
             print("Adding widgets to layout...")
             # Add widgets to layout
             self.layout.addWidget(self.image_label)
             self.layout.addWidget(self.filename_label)  # Add filename label
-            self.layout.addLayout(nav_layout)
+            self.layout.addLayout(self.nav_layout)
             self.layout.addWidget(self.fileSelectButton)
-            self.layout.addWidget(self.button1)
-            self.layout.addWidget(self.button2)
-            self.layout.addWidget(self.button3)
             
             print("Loading frames...")
             # Load frames and show first frame
@@ -332,15 +320,6 @@ class MainWindow(QMainWindow):
             new_y = min(max(min_y, text_box_pos.y()), max_y)
             
             self.text_box.move(new_x, new_y)
-
-    def print_hello(self):
-        print("Hello!")
-
-    def print_world(self):
-        print("World!")
-
-    def print_button_clicked(self):
-        print("Button was clicked!")
 
 if __name__ == "__main__":
     try:
