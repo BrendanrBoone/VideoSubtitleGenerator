@@ -3,7 +3,7 @@
 import sys
 import os
 from PySide6.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout, 
-                             QWidget, QLabel, QHBoxLayout, QScrollArea)
+                             QWidget, QLabel, QHBoxLayout, QScrollArea, QFileDialog)
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt, QTimer
 from util.draggable_text_edit import DraggableTextEdit
@@ -81,6 +81,10 @@ class MainWindow(QMainWindow):
             self.text_box.setFixedSize(150, 50)
             self.text_box.setText(text)
             self.text_box.move(50, 50)
+
+            # File browser
+            self.fileSelectButton = QPushButton("Open File", self)
+            self.fileSelectButton.clicked.connect(self.open_file_dialogue)
             
             print("Setting up buttons...")
             # Create buttons
@@ -98,6 +102,7 @@ class MainWindow(QMainWindow):
             self.layout.addWidget(self.image_label)
             self.layout.addWidget(self.filename_label)  # Add filename label
             self.layout.addLayout(nav_layout)
+            self.layout.addWidget(self.fileSelectButton)
             self.layout.addWidget(self.button1)
             self.layout.addWidget(self.button2)
             self.layout.addWidget(self.button3)
@@ -115,6 +120,16 @@ class MainWindow(QMainWindow):
             print(f"Error in MainWindow initialization: {e}")
             import traceback
             traceback.print_exc()
+
+    def open_file_dialogue(self):
+        file_dialogue = QFileDialog(self)
+        file_path, _ = file_dialogue.getOpenFileName(self, "Select File")
+        if file_path:
+            print(f"Selected file: {file_path}")
+        else:
+            print("No file selected")
+
+        
 
     def load_frames(self):
         cur_file_path = os.path.abspath(__file__)
@@ -335,7 +350,7 @@ if __name__ == "__main__":
         window = MainWindow()
         print("Setting up window...")
         # Set window properties after initialization
-        window.setWindowTitle("Image Viewer")
+        window.setWindowTitle("Video Subtitle Generator")
         window.setGeometry(100, 100, 800, 600)
         
         print("Showing window...")
