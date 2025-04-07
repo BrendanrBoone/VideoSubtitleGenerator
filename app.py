@@ -7,8 +7,9 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayo
                              QInputDialog, QComboBox)
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt, QTimer
-from util.draggable_text_edit import DraggableTextEdit
-from util.thumbnail_label import ThumbnailLabel
+from gui.util.draggable_text_edit import DraggableTextEdit
+from gui.util.thumbnail_label import ThumbnailLabel
+from util.font import Fonts
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -114,6 +115,7 @@ class MainWindow(QMainWindow):
             self.fontInputField = QComboBox()
             self.fontInputField.setEditable(True)
             self.fontInputField.setPlaceholderText("Select font")
+            self.fontInputField.addItems([s for s in Fonts.keys()])
 
             # font type container
             self.font_container = QWidget()
@@ -128,6 +130,10 @@ class MainWindow(QMainWindow):
             self.font_size.setInputMode(QInputDialog.InputMode.DoubleInput)
             self.font_size.setLabelText("font size:")
             self.font_size.setDoubleValue(0.8)
+
+            # color
+
+            # rotation
 
             # layout main.py options and set defaults
             self.opt_layout = QHBoxLayout()
@@ -171,8 +177,8 @@ class MainWindow(QMainWindow):
     def load_frames(self):
         cur_file_path = os.path.abspath(__file__)
         cur_dir = os.path.dirname(cur_file_path)
-        parent_dir = os.path.dirname(cur_dir)
-        frames_dir = os.path.join(parent_dir, "outputFiles/frames")
+        #parent_dir = os.path.dirname(cur_dir)
+        frames_dir = os.path.join(cur_dir, "outputFiles/frames")
         # Create frames directory if it doesn't exist
         try:
             if not os.path.exists(frames_dir):
