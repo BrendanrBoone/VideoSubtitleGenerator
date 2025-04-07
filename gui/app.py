@@ -292,7 +292,7 @@ class MainWindow(QMainWindow):
             # Apply font size to text box
             self.text_box.setStyleSheet(f"""
                 QTextEdit {{
-                    background-color: rgba(255, 255, 255, 180);
+                    background-color: rgba(255, 255, 255, 30 );
                     border: 1px solid black;
                     border-radius: 5px;
                     font-size: {font_size}pt;

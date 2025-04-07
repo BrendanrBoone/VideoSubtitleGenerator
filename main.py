@@ -9,9 +9,9 @@ import tempfile
 import os
 import sys
 from config import assemblyai_api_key
-from VideoSubtitleGenerator.util.video_transcriber import VideoTranscriber
-from VideoSubtitleGenerator.util.font import Fonts
-from VideoSubtitleGenerator.util.colors import Colors
+from util.video_transcriber import VideoTranscriber
+from util.font import Fonts
+from util.colors import Colors
 
 aai.settings.api_key = assemblyai_api_key
 transcriber = aai.Transcriber()
