@@ -11,6 +11,7 @@ from gui.util.draggable_text_edit import DraggableTextEdit
 from gui.util.thumbnail_label import ThumbnailLabel
 from util.font import Fonts
 from util.colors import Colors
+from util.video_transcriber import VideoTranscriber
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -25,7 +26,7 @@ class MainWindow(QMainWindow):
             # Create resize timer correctly
             self.resize_timer = QTimer(self)
             self.resize_timer.setSingleShot(True)
-            self.resize_timer.timeout.connect(self.handle_resize_timeout)
+            self.resize_timer.timeout.connect(self.handleResizeTimeout)
             self.pending_resize = False
             
             print("Creating widgets...")
@@ -59,7 +60,8 @@ class MainWindow(QMainWindow):
                     padding: 5px;
                 }
             """)
-            self.vidname_label.setText("Current video: Not Selected")
+            self.vidname = "Not Selected"
+            self.vidname_label.setText(f"Current video: {self.vidname}")
             
             print("Setting up thumbnails...")
             # Create thumbnail strip
@@ -79,8 +81,8 @@ class MainWindow(QMainWindow):
             # Create navigation buttons
             self.prev_button = QPushButton("←")
             self.next_button = QPushButton("→")
-            self.prev_button.clicked.connect(self.show_previous_frame)
-            self.next_button.clicked.connect(self.show_next_frame)
+            self.prev_button.clicked.connect(self.showPreviousFrame)
+            self.next_button.clicked.connect(self.showNextFrame)
             
             # Create thumbnail navigation layout
             self.nav_layout = QHBoxLayout()
@@ -100,7 +102,7 @@ class MainWindow(QMainWindow):
 
             # File browser
             self.fileSelectButton = QPushButton("Open File", self)
-            self.fileSelectButton.clicked.connect(self.open_file_dialogue)
+            self.fileSelectButton.clicked.connect(self.openFileDialogue)
 
             # maximum words per caption
             self.maxcap = QInputDialog()
@@ -109,16 +111,14 @@ class MainWindow(QMainWindow):
             self.maxcap.setLabelText("maximum words per caption:")
             self.maxcap.setIntValue(4)
 
-            # font type label
+            # font type
             self.fontLabel = QLabel("font:")
 
-            # font type
             self.fontInputField = QComboBox()
             self.fontInputField.setEditable(True)
-            self.fontInputField.setPlaceholderText("Select font")
+            self.fontInputField.setEditText("simply")
             self.fontInputField.addItems([s for s in Fonts.keys()])
 
-            # font type container
             self.font_container = QWidget()
             self.font_layout = QVBoxLayout()
             self.font_container.setLayout(self.font_layout)
@@ -132,16 +132,14 @@ class MainWindow(QMainWindow):
             self.font_size.setLabelText("font size:")
             self.font_size.setDoubleValue(0.8)
 
-            # color label
+            # color
             self.colorLabel = QLabel("color:")
 
-            # color
             self.colorInputField = QComboBox()
             self.colorInputField.setEditable(True)
-            self.colorInputField.setPlaceholderText("Select color")
+            self.colorInputField.setEditText("white")
             self.colorInputField.addItems([s for s in Colors.keys()])
 
-            # color container
             self.color_container = QWidget()
             self.color_layout = QVBoxLayout()
             self.color_container.setLayout(self.color_layout)
@@ -175,16 +173,23 @@ class MainWindow(QMainWindow):
             self.frames = []
             self.frame_files = []  # Store filenames
             self.current_frame_index = 0
-            self.load_frames()
+            self.loadFrames()
             print("Showing first frame...")
-            self.show_frame(0)
+            self.showFrame(0)
             print("MainWindow init complete.")
         except Exception as e:
             print(f"Error in MainWindow initialization: {e}")
             import traceback
             traceback.print_exc()
 
-    def open_file_dialogue(self):
+    def runGenerator(self):
+        transcriber = VideoTranscriber(file, maxcap, font, font_size, color, yaxis, rotate)
+        transcriber.extract_audio()
+        transcriber.transcribe_video()
+        output_path = os.path.join('outputFiles/', 'output_' + os.path.basename(file))
+        transcriber.create_video(output_path)
+
+    def openFileDialogue(self):
         file_dialogue = QFileDialog(self)
         file_path, _ = file_dialogue.getOpenFileName(self, "Select File")
         if file_path:
@@ -192,7 +197,7 @@ class MainWindow(QMainWindow):
         else:
             print("No file selected")
 
-    def load_frames(self):
+    def loadFrames(self):
         cur_file_path = os.path.abspath(__file__)
         cur_dir = os.path.dirname(cur_file_path)
         #parent_dir = os.path.dirname(cur_dir)
@@ -214,7 +219,7 @@ class MainWindow(QMainWindow):
                 thumbnail = ThumbnailLabel()
                 thumbnail_pixmap = blank_pixmap.scaled(80, 60, Qt.KeepAspectRatio, Qt.SmoothTransformation)
                 thumbnail.setPixmap(thumbnail_pixmap)
-                thumbnail.clicked.connect(lambda idx=0: self.show_frame(idx))
+                thumbnail.clicked.connect(lambda idx=0: self.showFrame(idx))
                 self.thumbnail_layout.addWidget(thumbnail)
                 return
         except Exception as e:
@@ -235,7 +240,7 @@ class MainWindow(QMainWindow):
             blank_pixmap.fill(Qt.white)
             self.frames.append(blank_pixmap)
             self.frame_files.append("blank.jpg")
-            self.show_frame(0)
+            self.showFrame(0)
             return
             
         frame_files.sort(key=lambda x: int(''.join(filter(str.isdigit, x))))
@@ -256,7 +261,7 @@ class MainWindow(QMainWindow):
                     thumbnail = ThumbnailLabel()
                     thumbnail_pixmap = pixmap.scaled(80, 60, Qt.KeepAspectRatio, Qt.SmoothTransformation)
                     thumbnail.setPixmap(thumbnail_pixmap)
-                    thumbnail.clicked.connect(lambda idx=len(self.frames)-1: self.show_frame(idx))
+                    thumbnail.clicked.connect(lambda idx=len(self.frames)-1: self.showFrame(idx))
                     self.thumbnail_layout.addWidget(thumbnail)
                     
         if not self.frames:
@@ -271,10 +276,10 @@ class MainWindow(QMainWindow):
             thumbnail = ThumbnailLabel()
             thumbnail_pixmap = blank_pixmap.scaled(80, 60, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             thumbnail.setPixmap(thumbnail_pixmap)
-            thumbnail.clicked.connect(lambda idx=0: self.show_frame(idx))
+            thumbnail.clicked.connect(lambda idx=0: self.showFrame(idx))
             self.thumbnail_layout.addWidget(thumbnail)
 
-    def show_frame(self, index):
+    def showFrame(self, index):
         if not self.frames:  # Check if frames list is empty
             print("No frames loaded.")
             return
@@ -282,7 +287,7 @@ class MainWindow(QMainWindow):
         if 0 <= index < len(self.frames):
             self.current_frame_index = index
             self.original_pixmap = self.frames[index]
-            self.update_image_size()
+            self.updateImageSize()
             
             # Update filename label
             if self.frame_files:
@@ -298,21 +303,21 @@ class MainWindow(QMainWindow):
                 else:
                     widget.setStyleSheet("border: 2px solid gray; border-radius: 5px;")
 
-    def show_previous_frame(self):
+    def showPreviousFrame(self):
         if not self.frames:  # Check if frames list is empty
             return
         new_index = (self.current_frame_index - 1) % len(self.frames)
-        self.show_frame(new_index)
+        self.showFrame(new_index)
         # Scroll to the previous thumbnail
         if new_index > 0:
             prev_widget = self.thumbnail_layout.itemAt(new_index - 1).widget()
             self.scroll_area.ensureWidgetVisible(prev_widget)
 
-    def show_next_frame(self):
+    def showNextFrame(self):
         if not self.frames:  # Check if frames list is empty
             return
         new_index = (self.current_frame_index + 1) % len(self.frames)
-        self.show_frame(new_index)
+        self.showFrame(new_index)
         # Scroll to the next thumbnail
         if new_index < len(self.frames) - 1:
             next_widget = self.thumbnail_layout.itemAt(new_index + 1).widget()
@@ -323,10 +328,10 @@ class MainWindow(QMainWindow):
         # Start or restart the timer on resize
         self.resize_timer.start(150)  # 150ms debounce
 
-    def handle_resize_timeout(self):
-        self.update_image_size()
+    def handleResizeTimeout(self):
+        self.updateImageSize()
 
-    def update_image_size(self):
+    def updateImageSize(self):
         if hasattr(self, 'original_pixmap') and not self.original_pixmap.isNull():
             # Calculate available space with minimum thresholds
             available_width = max(200, self.width() - 20)  # Minimum 200px width

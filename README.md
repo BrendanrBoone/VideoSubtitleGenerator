@@ -45,7 +45,7 @@ Generates subtitles for given mp4 file. If file name is not specified, records a
 * 'teal'
 
 ## Things to do
-* implement UI -- try PyQt/PySide
+* implement video transcriber to ui
 * fix text box boundaries
 * implement text editing feature - likely by producing trancript file additionally to the generated video
 * add like a shadow, and maybe cycling colors for text
