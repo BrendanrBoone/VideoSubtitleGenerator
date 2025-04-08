@@ -21,6 +21,11 @@ class MainWindow(QMainWindow):
             self.setWindowTitle("Initializing MainWindow")
             self.setGeometry(100, 100, 800, 600)
             self.setMinimumSize(300, 400)  # Set reasonable minimum window size
+
+            self.opt_maxcap = 4
+            self.opt_font_size = 0.8
+            self.opt_font = "simplex"
+            self.opt_color = "white"
             
             print("Setting up resize timer...")
             # Create resize timer correctly
@@ -109,14 +114,14 @@ class MainWindow(QMainWindow):
             self.maxcap.setOption(QInputDialog.InputDialogOption.NoButtons)
             self.maxcap.setInputMode(QInputDialog.InputMode.IntInput)
             self.maxcap.setLabelText("maximum words per caption:")
-            self.maxcap.setIntValue(4)
+            self.maxcap.setIntValue(self.opt_maxcap)
 
             # font type
             self.fontLabel = QLabel("font:")
 
             self.fontInputField = QComboBox()
             self.fontInputField.setEditable(True)
-            self.fontInputField.setEditText("simply")
+            self.fontInputField.setEditText(self.opt_font)
             self.fontInputField.addItems([s for s in Fonts.keys()])
 
             self.font_container = QWidget()
@@ -130,14 +135,14 @@ class MainWindow(QMainWindow):
             self.font_size.setOption(QInputDialog.InputDialogOption.NoButtons)
             self.font_size.setInputMode(QInputDialog.InputMode.DoubleInput)
             self.font_size.setLabelText("font size:")
-            self.font_size.setDoubleValue(0.8)
+            self.font_size.setDoubleValue(self.opt_font_size)
 
             # color
             self.colorLabel = QLabel("color:")
 
             self.colorInputField = QComboBox()
             self.colorInputField.setEditable(True)
-            self.colorInputField.setEditText("white")
+            self.colorInputField.setEditText(self.opt_color)
             self.colorInputField.addItems([s for s in Colors.keys()])
 
             self.color_container = QWidget()
@@ -360,8 +365,6 @@ class MainWindow(QMainWindow):
             # Set text box size to be approximately 20% of image width and 15% of image height
             text_width = int(image_width * self.text_box.par_img_w_ratio)
             text_height = int(image_height * self.text_box.par_img_h_ratio)
-            
-            # Update text box size
             self.text_box.setFixedSize(text_width, text_height)
             
             # Calculate appropriate font size based on text box size
