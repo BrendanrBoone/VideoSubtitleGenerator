@@ -13,6 +13,8 @@ class DraggableTextEdit(QTextEdit):
                 border-radius: 5px;
             }
         """)
+        self.par_img_w_ratio = 0.5
+        self.par_img_h_ratio = 0.2
         self.dragging = False
         self.offset = QPoint()
         self.setCursor(Qt.CursorShape.OpenHandCursor)

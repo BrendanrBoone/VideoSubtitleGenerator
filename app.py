@@ -358,8 +358,8 @@ class MainWindow(QMainWindow):
             y_offset = (label_height - image_height) // 2
             
             # Set text box size to be approximately 20% of image width and 15% of image height
-            text_width = max(150, int(image_width * 0.2))
-            text_height = max(50, int(image_height * 0.15))
+            text_width = int(image_width * self.text_box.par_img_w_ratio)
+            text_height = int(image_height * self.text_box.par_img_h_ratio)
             
             # Update text box size
             self.text_box.setFixedSize(text_width, text_height)
