@@ -104,6 +104,7 @@ class MainWindow(QMainWindow):
             self.text_box.setFixedSize(150, 50)
             self.text_box.setText(text)
             self.text_box.move(50, 50)
+            self.text_box.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
             # File browser
             self.fileSelectButton = QPushButton("Open File", self)
@@ -366,15 +367,6 @@ class MainWindow(QMainWindow):
             text_width = int(image_width * self.text_box.par_img_w_ratio)
             text_height = int(label_height * self.text_box.par_img_h_ratio)
             self.text_box.setFixedSize(text_width, text_height)
-            
-            # Apply font size to text box
-            self.text_box.setStyleSheet(f"""
-                QTextEdit {{
-                    background-color: rgba(255, 255, 255, 30 );
-                    border: 1px solid black;
-                    border-radius: 5px;
-                }}
-            """)
             
             # Ensure cursor settings are preserved
             self.text_box.setCursor(Qt.CursorShape.OpenHandCursor)

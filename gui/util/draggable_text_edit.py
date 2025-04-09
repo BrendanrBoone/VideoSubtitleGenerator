@@ -8,7 +8,7 @@ class DraggableTextEdit(QTextEdit):
         self.setReadOnly(True)
         self.setStyleSheet("""
             QTextEdit {
-                background-color: rgba(255, 255, 255, 180);
+                background-color: rgba(255, 255, 255, 50);
                 border: 1px solid black;
                 border-radius: 5px;
             }
