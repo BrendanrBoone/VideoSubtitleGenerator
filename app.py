@@ -373,7 +373,6 @@ class MainWindow(QMainWindow):
                     background-color: rgba(255, 255, 255, 30 );
                     border: 1px solid black;
                     border-radius: 5px;
-                    font-size: {font_size}pt;
                 }}
             """)
             
