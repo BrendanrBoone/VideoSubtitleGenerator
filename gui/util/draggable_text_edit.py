@@ -13,7 +13,7 @@ class DraggableTextEdit(QTextEdit):
                 border-radius: 5px;
             }
         """)
-        self.par_img_w_ratio = 0.5
+        self.par_img_w_ratio = 1
         self.par_img_h_ratio = 0.2
         self.dragging = False
         self.offset = QPoint()
@@ -41,19 +41,19 @@ class DraggableTextEdit(QTextEdit):
             if pixmap:
                 # Calculate image boundaries
                 image_width = pixmap.width()
-                image_height = pixmap.height()
+                #image_height = pixmap.height()
                 label_width = self.image_label.width()
                 label_height = self.image_label.height()
                 
                 # Calculate image offset (for centered images)
                 x_offset = (label_width - image_width) // 2
-                y_offset = (label_height - image_height) // 2
+                #y_offset = (label_height - image_height) // 2
                 
                 # Calculate bounds
                 min_x = x_offset
-                min_y = y_offset
+                min_y = 0
                 max_x = x_offset + image_width - self.width()
-                max_y = y_offset + image_height - self.height()
+                max_y = label_height - self.height()
                 
                 # Constrain position to image boundaries
                 new_x = min(max(min_x, new_pos.x()), max_x)

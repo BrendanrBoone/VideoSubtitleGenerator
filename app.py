@@ -352,7 +352,7 @@ class MainWindow(QMainWindow):
             
             # Calculate appropriate text box size relative to image size
             image_width = scaled_pixmap.width()
-            image_height = scaled_pixmap.height()
+            #image_height = scaled_pixmap.height()
             
             # Calculate the actual image position within the label (for centering)
             label_width = self.image_label.width()
@@ -360,15 +360,12 @@ class MainWindow(QMainWindow):
             
             # Calculate image offset (for centered images)
             x_offset = (label_width - image_width) // 2
-            y_offset = (label_height - image_height) // 2
+            #y_offset = (label_height - image_height) // 2
             
             # Set text box size to be approximately 20% of image width and 15% of image height
             text_width = int(image_width * self.text_box.par_img_w_ratio)
-            text_height = int(image_height * self.text_box.par_img_h_ratio)
+            text_height = int(label_height * self.text_box.par_img_h_ratio)
             self.text_box.setFixedSize(text_width, text_height)
-            
-            # Calculate appropriate font size based on text box size
-            font_size = max(10, min(20, int(text_height / 3)))
             
             # Apply font size to text box
             self.text_box.setStyleSheet(f"""
@@ -389,13 +386,15 @@ class MainWindow(QMainWindow):
             
             # Calculate the bounds of the actual image within the label
             min_x = x_offset
-            min_y = y_offset
+            min_y = 0
             max_x = x_offset + image_width - self.text_box.width()
-            max_y = y_offset + image_height - self.text_box.height()
+            max_y = label_height - self.text_box.height()
             
             # Ensure text box stays within image bounds
             new_x = min(max(min_x, text_box_pos.x()), max_x)
             new_y = min(max(min_y, text_box_pos.y()), max_y)
+            print("miny", min_y, "texty", text_box_pos.y(), "maxy", max_y)
+            print(f"< {new_x}, {new_y} >")
             
             self.text_box.move(new_x, new_y)
 
