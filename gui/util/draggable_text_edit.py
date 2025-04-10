@@ -6,13 +6,19 @@ class DraggableTextEdit(QTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setReadOnly(True)
-        self.setStyleSheet("""
-            QTextEdit {
-                background-color: rgba(255, 255, 255, 50);
-                border: 1px solid black;
-                border-radius: 5px;
-            }
+
+        self.background_color = "rgba(255, 255, 255, 50)"
+        self.border = "1px solid black"
+        self.border_radius = "5px"
+        self.font_type = ""
+        self.setStyleSheet(f"""
+            QTextEdit {{
+                background-color: {self.background_color};
+                border: {self.border};
+                border-radius: {self.border_radius};
+            }}
         """)
+
         self.par_img_w_ratio = 1
         self.par_img_h_ratio = 0.2
         self.dragging = False
@@ -76,3 +82,6 @@ class DraggableTextEdit(QTextEdit):
     def leaveEvent(self, event):
         self.setCursor(Qt.CursorShape.OpenHandCursor)
         super().leaveEvent(event)
+
+    def setFontPointSize(self, f):
+        super().setFontPointSize(f)

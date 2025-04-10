@@ -2,6 +2,7 @@
 
 import sys
 import os
+import cv2
 from PySide6.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout, 
                              QWidget, QLabel, QHBoxLayout, QScrollArea, QFileDialog,
                              QInputDialog, QComboBox)
@@ -99,10 +100,10 @@ class MainWindow(QMainWindow):
             
             print("Setting up text box...")
  
-            text = "Drag me!"
+            self.text = "Drag me!"
             self.text_box = DraggableTextEdit(self.image_label)
             self.text_box.setFixedSize(150, 50)
-            self.text_box.setText(text)
+            self.text_box.setText(self.text)
             self.text_box.move(50, 50)
             self.text_box.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -121,9 +122,10 @@ class MainWindow(QMainWindow):
             self.fontLabel = QLabel("font:")
 
             self.fontInputField = QComboBox()
-            self.fontInputField.setEditable(True)
+            self.fontInputField.setEditable(False)
             self.fontInputField.setEditText(self.opt_font)
             self.fontInputField.addItems([s for s in Fonts.keys()])
+            self.fontInputField.currentTextChanged.connect(self.updateFont)
 
             self.font_container = QWidget()
             self.font_layout = QVBoxLayout()
@@ -131,20 +133,22 @@ class MainWindow(QMainWindow):
             self.font_layout.addWidget(self.fontLabel)
             self.font_layout.addWidget(self.fontInputField)
 
-            # font size
+            # font size * point to scale
             self.font_size = QInputDialog()
             self.font_size.setOption(QInputDialog.InputDialogOption.NoButtons)
             self.font_size.setInputMode(QInputDialog.InputMode.DoubleInput)
             self.font_size.setLabelText("font size:")
             self.font_size.setDoubleValue(self.opt_font_size)
+            self.font_size.doubleValueChanged.connect(self.updateFontSize)
 
             # color
             self.colorLabel = QLabel("color:")
 
             self.colorInputField = QComboBox()
-            self.colorInputField.setEditable(True)
+            self.colorInputField.setEditable(False)
             self.colorInputField.setEditText(self.opt_color)
             self.colorInputField.addItems([s for s in Colors.keys()])
+            self.colorInputField.currentTextChanged.connect(self.updateColor)
 
             self.color_container = QWidget()
             self.color_layout = QVBoxLayout()
@@ -384,10 +388,31 @@ class MainWindow(QMainWindow):
             # Ensure text box stays within image bounds
             new_x = min(max(min_x, text_box_pos.x()), max_x)
             new_y = min(max(min_y, text_box_pos.y()), max_y)
-            print("miny", min_y, "texty", text_box_pos.y(), "maxy", max_y)
-            print(f"< {new_x}, {new_y} >")
             
             self.text_box.move(new_x, new_y)
+        
+    def updateColor(self):
+        print("COLOR CHANGE")
+        self.opt_color = self.colorInputField.currentText()
+        self.text_box.setTextColor(self.opt_color)
+
+    def updateFont(self):
+        print("FONT CHANGE")
+        self.opt_font = self.fontInputField.currentText()
+        self.text_box.setCurrentFont(self.opt_font)
+
+    def updateFontSize(self):
+        print("FONT SIZE CHANGE")
+        self.opt_font_size = self.font_size.doubleValue()
+        (_, height), _ = cv2.getTextSize(
+            text = "M",
+            fontFace = Fonts[self.opt_font],
+            fontScale = 1,
+            thickness = 1
+        )
+        base_font_px = height
+        point_size = (self.opt_font_size * base_font_px * 72) / 96 # 96 == DPI --dots per inch
+        self.text_box.setFontPointSize(point_size)
 
 if __name__ == "__main__":
     try:
