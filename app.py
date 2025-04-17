@@ -224,7 +224,7 @@ class MainWindow(QMainWindow):
             os.makedirs(folder)
         else:
             for file in os.listdir(folder):
-                path = os.path.join(folder, path)
+                path = os.path.join(folder, file)
                 try:
                     if os.path.isfile(path):
                         os.unlink(path)
