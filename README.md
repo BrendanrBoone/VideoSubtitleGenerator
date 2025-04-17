@@ -47,6 +47,7 @@ Generates subtitles for given mp4 file. If file name is not specified, records a
 ## Things to do
 * implement video transcriber to ui
 * add frames folder for sub imp on ui
+* video transcriber when running app.py
 * someway around cv2 base font scale and css font point
 * resizable textbox
 * implement text editing feature - likely by producing trancript file additionally to the generated video

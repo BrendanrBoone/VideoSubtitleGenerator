@@ -102,6 +102,8 @@ class VideoTranscriber:
         audio.write_audiofile(output_audio_path)
         self.audio_path = output_audio_path
         print('Audio extracted')
+        
+    
     
     def extract_frames(self, output_folder):
         print('Extracting frames')
@@ -130,21 +132,26 @@ class VideoTranscriber:
         
         cap.release()
         print('Frames extracted')
+    
+    # create new folder if it doesn't exist, or remove all contents if it does
+    def set_frames_folder(self, folder):
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        else:
+            for file in os.listdir(folder):
+                path = os.path.join(folder, path)
+                try:
+                    if os.path.isfile(path):
+                        os.unlink(path)
+                except Exception as e:
+                    print(f'Error deleting {path}: {e}')
 
     def create_video(self, output_video_path):
         print('Creating video')
         image_folder = os.path.join("outputFiles/", "frames")
-        if not os.path.exists(image_folder):
-            os.makedirs(image_folder)
-        else:
-            # Remove all files in the existing folder
-            for file in os.listdir(image_folder):
-                file_path = os.path.join(image_folder, file)
-                try:
-                    if os.path.isfile(file_path):
-                        os.unlink(file_path)
-                except Exception as e:
-                    print(f'Error deleting {file_path}: {e}')
+        obs_folder = os.path.join("outputFiles/", "ui_frames")
+        self.set_frames_folder(image_folder)
+        self.set_frames_folder(obs_folder)
 
         self.extract_frames(image_folder)
 
