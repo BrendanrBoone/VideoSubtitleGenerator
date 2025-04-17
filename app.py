@@ -23,6 +23,7 @@ class MainWindow(QMainWindow):
             self.setGeometry(100, 100, 800, 600)
             self.setMinimumSize(300, 400)  # Set reasonable minimum window size
 
+            self.opt_video_path = ""
             self.opt_maxcap = 4
             self.opt_font_size = 0.8
             self.opt_font = "simplex"
@@ -198,12 +199,52 @@ class MainWindow(QMainWindow):
         transcriber.transcribe_video()
         output_path = os.path.join('outputFiles/', 'output_' + os.path.basename(file))
         transcriber.create_video(output_path)
+        
+    def extract_frames_ui(self, output_folder):
+        if self.opt_video_path:
+            print('Extracting frames ui')
+            cap = cv2.VideoCapture(self.opt_video_path)
+            N_frames = 0
+
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                
+                cv2.imwrite(os.path.join(output_folder, str(N_frames) + ".jpg"), frame)
+                N_frames += 1
+            
+            cap.release()
+            print('Frames ui extracted')
+        else:
+            print('opt_video_path not yet defined', file=sys.stderr)
+            
+    def set_frames_folder(self, folder):
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        else:
+            for file in os.listdir(folder):
+                path = os.path.join(folder, path)
+                try:
+                    if os.path.isfile(path):
+                        os.unlink(path)
+                except Exception as e:
+                    print(f'Error deleting {path}: {e}')
+    
+    def create_frames_ui(self):
+        obs_folder = os.path.join("outputFiles/", "ui_frames")
+        self.set_frames_folder(obs_folder)
+        self.extract_frames_ui(obs_folder)
 
     def openFileDialogue(self):
         file_dialogue = QFileDialog(self)
         file_path, _ = file_dialogue.getOpenFileName(self, "Select File")
         if file_path:
             print(f"Selected file: {file_path}")
+            self.opt_video_path = file_path
+            self.create_frames_ui()
+            self.loadFrames()
+            self.showFrame(0)
         else:
             print("No file selected")
 
@@ -211,7 +252,7 @@ class MainWindow(QMainWindow):
         cur_file_path = os.path.abspath(__file__)
         cur_dir = os.path.dirname(cur_file_path)
         #parent_dir = os.path.dirname(cur_dir)
-        frames_dir = os.path.join(cur_dir, "outputFiles/frames")
+        frames_dir = os.path.join(cur_dir, "outputFiles/ui_frames")
         # Create frames directory if it doesn't exist
         try:
             if not os.path.exists(frames_dir):

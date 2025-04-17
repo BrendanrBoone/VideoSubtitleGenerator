@@ -145,13 +145,11 @@ class VideoTranscriber:
                         os.unlink(path)
                 except Exception as e:
                     print(f'Error deleting {path}: {e}')
-
+        
     def create_video(self, output_video_path):
         print('Creating video')
         image_folder = os.path.join("outputFiles/", "frames")
-        obs_folder = os.path.join("outputFiles/", "ui_frames")
         self.set_frames_folder(image_folder)
-        self.set_frames_folder(obs_folder)
 
         self.extract_frames(image_folder)
 
