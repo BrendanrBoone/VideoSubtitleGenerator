@@ -14,6 +14,7 @@ class DraggableTextEdit(QTextEdit):
         self.color = color
         self.font_size = font_size
         
+        self.updateStyle()
 
         # change when corner dragged
         self.par_img_w_ratio = 1
@@ -37,6 +38,7 @@ class DraggableTextEdit(QTextEdit):
                 border-radius: {self.border_radius};
             }}
         """)
+        print("UPDATED DRAGGABLE")
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -92,10 +94,14 @@ class DraggableTextEdit(QTextEdit):
         self.setCursor(Qt.CursorShape.OpenHandCursor)
         super().leaveEvent(event)
 
-    def setFontPointSize(self, f):
+    def changeFontPointSize(self, f):
         self.font_size = f
         self.updateStyle()
         
-    def setFontFamily(self, ff):
+    def changeFontFamily(self, ff):
         self.font_family = ff
+        self.updateStyle()
+        
+    def changeFontColor(self, c):
+        self.color = c
         self.updateStyle()

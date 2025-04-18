@@ -456,17 +456,17 @@ class MainWindow(QMainWindow):
     def updateColor(self):
         print("COLOR CHANGE")
         self.opt_color = self.colorInputField.currentText()
-        self.text_box.setTextColor(self.opt_color)
+        self.text_box.changeFontColor(self.opt_color)
 
     def updateFont(self):
         print("FONT CHANGE")
         self.opt_font = self.fontInputField.currentText()
-        self.text_box.setCurrentFont(self.opt_font)
+        self.text_box.changeFontFamily(self.opt_font)
 
     def updateFontSize(self):
         print("FONT SIZE CHANGE")
         self.opt_font_size = self.font_size.doubleValue()
-        self.text_box.setFontPointSize(self.opt_font_size)
+        self.text_box.changeFontPointSize(self.opt_font_size)
 
 if __name__ == "__main__":
     try:
