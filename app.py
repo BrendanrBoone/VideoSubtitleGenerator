@@ -11,7 +11,7 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt, QTimer
 from gui.util.draggable_text_edit import DraggableTextEdit
 from gui.util.thumbnail_label import ThumbnailLabel
-from util.font import (initCssFonts, cssFontPath)
+from util.font import cssFonts
 from util.colors import Colors
 from util.video_transcriber import VideoTranscriber
 
@@ -23,12 +23,10 @@ class MainWindow(QMainWindow):
             self.setWindowTitle("Initializing MainWindow")
             self.setGeometry(100, 100, 800, 600)
             self.setMinimumSize(300, 400)  # Set reasonable minimum window size
-            
-            initCssFonts()
 
             self.opt_video_path = ""
             self.opt_maxcap = 4
-            self.opt_font_size = 0.8
+            self.opt_font_size = 16
             self.opt_font = "Arial"
             self.opt_color = "white"
             
@@ -105,7 +103,12 @@ class MainWindow(QMainWindow):
             print("Setting up text box...")
  
             self.text = "Drag me!"
-            self.text_box = DraggableTextEdit(self.image_label)
+            self.text_box = DraggableTextEdit(
+                self.image_label,
+                self.opt_font,
+                self.opt_color,
+                self.opt_font_size
+            )
             self.text_box.setFixedSize(150, 50)
             self.text_box.setText(self.text)
             self.text_box.move(50, 50)
@@ -128,7 +131,7 @@ class MainWindow(QMainWindow):
             self.fontInputField = QComboBox()
             self.fontInputField.setEditable(False)
             self.fontInputField.setEditText(self.opt_font)
-            self.fontInputField.addItems([s for s in cssFontPath.keys()])
+            self.fontInputField.addItems([s for s in cssFonts.keys()])
             self.fontInputField.currentTextChanged.connect(self.updateFont)
 
             self.font_container = QWidget()
@@ -463,15 +466,7 @@ class MainWindow(QMainWindow):
     def updateFontSize(self):
         print("FONT SIZE CHANGE")
         self.opt_font_size = self.font_size.doubleValue()
-        (_, height), _ = cv2.getTextSize(
-            text = "M",
-            fontFace = Fonts[self.opt_font],
-            fontScale = 1,
-            thickness = 1
-        )
-        base_font_px = height
-        point_size = (self.opt_font_size * base_font_px * 72) / 96 # 96 == DPI --dots per inch
-        self.text_box.setFontPointSize(point_size)
+        self.text_box.setFontPointSize(self.opt_font_size)
 
 if __name__ == "__main__":
     try:

@@ -1,4 +1,5 @@
 import cv2
+import os
 from PySide6.QtGui import QFontDatabase
 from PIL import ImageFont
 
@@ -15,24 +16,9 @@ Fonts = {
 }
 
 # {<font-name> : <font-path>}
-cssFontPath = {}
+cssFonts = {
+    "Arial": os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts/Arial.ttf"),
+    "Times New Roman": os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts/TimesNewRoman.ttf"),
+    "Comic Sans": os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts/ComicSans.ttf")
+}
 
-lst_of_css_fonts = [
-    "Arial",
-    "Times New Roman",
-    "Comic Sans"
-]
-
-# uses PySide6 to find system-wide fonts and define them to cssFontPath
-def initCssFonts():
-    font_db = QFontDatabase()
-    for font in lst_of_css_fonts:
-        font_path = None
-        for font_info in font_db.styles(font):
-            if hasattr(font_db, 'fontFilePath'):
-                font_path = font_db.fontFilePath(font, font_info)
-        if font_path and font_path.lower().endswith('.ttf'):
-            cssFontPath[font] = font_path
-        else:
-            print(f"{font} path couldn't be found.")
-            cssFontPath[font] = None
