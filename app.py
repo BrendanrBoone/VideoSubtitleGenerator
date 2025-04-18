@@ -11,7 +11,7 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt, QTimer
 from gui.util.draggable_text_edit import DraggableTextEdit
 from gui.util.thumbnail_label import ThumbnailLabel
-from util.font import Fonts
+from util.font import (initCssFonts, cssFontPath)
 from util.colors import Colors
 from util.video_transcriber import VideoTranscriber
 
@@ -23,11 +23,13 @@ class MainWindow(QMainWindow):
             self.setWindowTitle("Initializing MainWindow")
             self.setGeometry(100, 100, 800, 600)
             self.setMinimumSize(300, 400)  # Set reasonable minimum window size
+            
+            initCssFonts()
 
             self.opt_video_path = ""
             self.opt_maxcap = 4
             self.opt_font_size = 0.8
-            self.opt_font = "simplex"
+            self.opt_font = "Arial"
             self.opt_color = "white"
             
             print("Setting up resize timer...")
@@ -126,7 +128,7 @@ class MainWindow(QMainWindow):
             self.fontInputField = QComboBox()
             self.fontInputField.setEditable(False)
             self.fontInputField.setEditText(self.opt_font)
-            self.fontInputField.addItems([s for s in Fonts.keys()])
+            self.fontInputField.addItems([s for s in cssFontPath.keys()])
             self.fontInputField.currentTextChanged.connect(self.updateFont)
 
             self.font_container = QWidget()

@@ -8,7 +8,7 @@ Generates subtitles for given mp4 file. If file name is not specified, records a
 
 ## Setup
 * replace ```assemblyai_api_key``` with the one created above
-* ```pip install opencv-python assemblyai moviepy tqdm numpy sounddevice argparse```
+* ```pip install opencv-python assemblyai moviepy tqdm numpy sounddevice argparse Pillow```
 
 ## Usage
 
