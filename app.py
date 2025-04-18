@@ -3,6 +3,7 @@
 import sys
 import os
 import cv2
+import traceback
 from PySide6.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout, 
                              QWidget, QLabel, QHBoxLayout, QScrollArea, QFileDialog,
                              QInputDialog, QComboBox)
@@ -190,7 +191,6 @@ class MainWindow(QMainWindow):
             print("MainWindow init complete.")
         except Exception as e:
             print(f"Error in MainWindow initialization: {e}")
-            import traceback
             traceback.print_exc()
 
     def runGenerator(self):
@@ -218,7 +218,7 @@ class MainWindow(QMainWindow):
             print('Frames ui extracted')
         else:
             print('opt_video_path not yet defined', file=sys.stderr)
-            
+
     def set_frames_folder(self, folder):
         if not os.path.exists(folder):
             os.makedirs(folder)
@@ -235,6 +235,17 @@ class MainWindow(QMainWindow):
         obs_folder = os.path.join("outputFiles/", "ui_frames")
         self.set_frames_folder(obs_folder)
         self.extract_frames_ui(obs_folder)
+    
+    def clearLayout(self, layout):
+        if layout is not None:
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.setParent(None)
+                    widget.deleteLater()
+                else:
+                    self.clearLayout(item.layout())
 
     def openFileDialogue(self):
         file_dialogue = QFileDialog(self)
@@ -242,7 +253,12 @@ class MainWindow(QMainWindow):
         if file_path:
             print(f"Selected file: {file_path}")
             self.opt_video_path = file_path
+            self.vidname = file_path
+            self.vidname_label.setText(f"Current video: {self.vidname}")
             self.create_frames_ui()
+            self.clearLayout(self.thumbnail_layout)
+            self.frames = []
+            self.current_frame_index = 0
             self.loadFrames()
             self.showFrame(0)
         else:
